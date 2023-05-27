@@ -12,7 +12,7 @@ abstract class DBFrame {
 
 class Database extends DBFrame {
     
-    public function __construct() {
+    public function setup() {
         $this->server = 'localhost';
         $this->user = 'root';
         $this->password = '';
