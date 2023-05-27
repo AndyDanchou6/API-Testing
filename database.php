@@ -11,6 +11,8 @@ class Database extends DBFrame {
 
         $this->conn = new mysqli($this->server, $this->user, $this->password);
         $this->conn->query("CREATE DATABASE IF NOT EXISTS ". $this->dbname);
+    }
+    public function sql($sql) {
         return $this->conn = new mysqli($this->server, $this->user, $this->password, $this->dbname);
     }
 }

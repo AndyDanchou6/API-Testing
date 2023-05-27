@@ -1,10 +1,10 @@
 <?php
 
 abstract class DBFrame {
-    public $conn;
-    public $server;
-    public $user;
-    public $password;
+    protected $conn;
+    protected $server;
+    protected $user;
+    protected $password;
 
     abstract public function setup();
 }
