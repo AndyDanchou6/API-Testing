@@ -2,7 +2,7 @@
 
 interface Tables {
     public function create();
-    public function insert();
+    public function insert($name, $date, $price, $amount, $manu);
     public function remove();
     public function showAll();
 }

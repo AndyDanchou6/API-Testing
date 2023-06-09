@@ -3,7 +3,7 @@
 include 'dbframe.php';
 
 class Database extends DBFrame {
-    public $dbname = 'API_Testing';
+    public $dbname = 'api_testing';
     public function setup() {
         $this->server = 'localhost';
         $this->user = 'root';
