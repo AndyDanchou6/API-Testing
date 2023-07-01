@@ -1,12 +1,12 @@
 <?php
 error_reporting(0);
-include 'tbl.php';
-include 'database.php';
-include 'sts.php';
+include 'tables.php';
+include 'db.php';
+include 'status.php';
 header('Content-Type: application/json');
 
-class Alcoholic_drinks extends Database implements Tbl {
-    public $tblName = 'drinks';
+class Car extends Database implements Tables {
+    public $tblName = 'car';
 
     public function __construct() {
         $this->setup();
@@ -14,8 +14,9 @@ class Alcoholic_drinks extends Database implements Tbl {
     public function create() {
         $create = "CREATE TABLE if not exists $this->tblName (
             id int auto_increment primary key,
-            brand varchar(200),
-            date varchar(200),
+            model_name varchar(200),
+            engine_type varchar(200),
+            drive_type varchar(200),
             price int,
             manufacturer varchar(200)
         )";
@@ -24,24 +25,24 @@ class Alcoholic_drinks extends Database implements Tbl {
     public function insert(array $params) {
         $insert_stat = true;
 
-        if ($params['brand'] == null || $params['date'] == null || $params['price'] == null || $params['manu'] == null) {
+        if ($params['model'] == null || $params['engine'] == null || $params['drive'] == null || $params['price'] == null || $params['manu'] == null) {
             return $insert_stat = false;
         }
 
-        elseif ($params['brand'] == !null && $params['date'] == !null && $params['price'] == !null && $params['manu'] == !null) {
-            $brand = $params['brand'];
-            $date = $params['date'];
+        elseif ($params['model'] == !null && $params['engine'] == !null && $params['drive'] == !null && $params['price'] == !null && $params['manu'] == !null) {
+            $model = $params['model'];
+            $engine = $params['engine'];
+            $drive = $params['drive'];
             $price = $params['price'];
             $manu = $params['manu'];
-
-            $insert = "INSERT INTO $this->tblName (brand, date, price, manufacturer)
-                VALUES ('$brand', '$date', '$price', '$manu')";
+            $insert = "INSERT INTO $this->tblName (model_name, engine_type, drive_type, price, manufacturer)
+                VALUES ('$model', '$engine', '$drive', '$price', '$manu')";
             $res = $this->conn->query($insert);
             if ($res) {
                 return $insert_stat = true;
             }
             else {
-                return $insert_stat = true;
+                return $insert_stat = false;
             }
         }
     }
@@ -51,8 +52,8 @@ class Alcoholic_drinks extends Database implements Tbl {
         return $stat;
     }
     public function show($id) {
-        $get_drinks = "SELECT * FROM $this->tblName WHERE id = '$id' LIMIT 1";
-        $one_item = $this->conn->query($get_drinks);
+        $get_gadget = "SELECT * FROM $this->tblName WHERE id = '$id' LIMIT 1";
+        $one_item = $this->conn->query($get_gadget);
         if ($one_item) {
             if (mysqli_num_rows($one_item) == 1) {
                 $fetch_one = mysqli_fetch_assoc($one_item);
@@ -84,8 +85,9 @@ class Alcoholic_drinks extends Database implements Tbl {
     }
     public function update(array $params) {
         $id = $params['id'];
-        $brand = $params['brand'];
-        $date = $params['date'];
+        $model = $params['model'];
+        $engine = $params['engine'];
+        $drive = $params['drive'];
         $price = $params['price'];
         $manu = $params['manu'];
 
@@ -95,7 +97,10 @@ class Alcoholic_drinks extends Database implements Tbl {
         elseif (!isset($model)) {
             return $stat = false;
         }
-        elseif (!isset($date)) {
+        elseif (!isset($engine)) {
+            return $stat = false;
+        }
+        elseif (!isset($drive)) {
             return $stat = false;
         }
         elseif (!isset($price)) {
@@ -106,7 +111,7 @@ class Alcoholic_drinks extends Database implements Tbl {
         }
 
         else {
-            $update = "UPDATE $this->tblName SET brand ='$brand', date='$date', price='$price', manufacturer='$manu' WHERE id = '$id'";
+            $update = "UPDATE $this->tblName SET model_name ='$model', engine_type='$engine', drive_type='$drive', price='$price', manufacturer='$manu' WHERE id = '$id'";
             $update_stat = $this->conn->query($update);
             if ($update_stat) {
                 return $update_stat;
@@ -118,7 +123,9 @@ class Alcoholic_drinks extends Database implements Tbl {
     }
 }
 
-$data1 = new Alcoholic_Drinks();
+
+
+$data1 = new Car();
 $data1->create();
 
 $request = $_SERVER['REQUEST_METHOD'];
@@ -153,7 +160,7 @@ if ($request == "POST") {
             $insert_stat = $status->error();
             echo json_encode($insert_stat);
             echo json_encode($inserted_data);
-        }   
+        }
     }
 }
 
@@ -162,14 +169,14 @@ elseif ($request == "GET") {
     $id = json_decode($_GET['id']);
 
     if (isset($id)) {
-        $drinks_one = $data1->show($id);
-        if ($drinks_one == null) {
+        $gadget_one = $data1->show($id);
+        if ($gadget_one == null) {
             $get_stat = $status->not_found();
             echo json_encode($get_stat);
         }
         else {
             $get_stat = $status->found();
-            echo json_encode($drinks_one);
+            echo json_encode($gadget_one);
             echo json_encode($get_stat);
         }
     }
@@ -202,7 +209,6 @@ elseif ($request == "DELETE") {
         echo json_encode($delete_stat);
     }
 }
-
 // method not allowed
 else {
     $req_stat = $status->method_error($request);

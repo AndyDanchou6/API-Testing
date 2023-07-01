@@ -20,7 +20,7 @@ class Gadgets extends Database implements Tables {
             amount_launched int,
             manufacturer varchar(200)
         )";
-        $this->conn->query($create);;
+        $this->conn->query($create);
     }
     public function insert(array $params) {
         $insert_stat = true;
