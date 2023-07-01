@@ -22,18 +22,33 @@ class Alcoholic_drinks extends Database implements Tbl {
         $this->conn->query($create);;
     }
     public function insert(array $params) {
-        $brand = $params['brand'];
-        $date = $params['date'];
-        $price = $params['price'];
-        $manu = $params['manu'];
+        $insert_stat = true;
 
-        $insert = "INSERT INTO $this->tblName (brand, date, price,manufacturer)
-            VALUES ('$brand', '$date', '$price', '$manu')";
-        $res = $this->conn->query($insert);;
-        return $res;
+        if ($params['brand'] == null || $params['date'] == null || $params['price'] == null || $params['manu'] == null) {
+            return $insert_stat = false;
+        }
+
+        elseif ($params['brand'] == !null && $params['date'] == !null && $params['price'] == !null && $params['manu'] == !null) {
+            $brand = $params['brand'];
+            $date = $params['date'];
+            $price = $params['price'];
+            $manu = $params['manu'];
+
+            $insert = "INSERT INTO $this->tblName (brand, date, price,manufacturer)
+                VALUES ('$brand', '$date', '$price', '$manu')";
+            $res = $this->conn->query($insert);;
+            if ($res) {
+                return $insert_stat = true;
+            }
+            else {
+                return $insert_stat = true;
+            }
+        }
     }
     public function remove($id) {
-
+        $delete = "DELETE FROM $this->tblName WHERE id = '$id'";
+        $stat = $this->conn->query($delete);
+        return $stat;
     }
     public function show($id) {
         $get_drinks = "SELECT * FROM $this->tblName WHERE id = '$id' LIMIT 1";
@@ -68,7 +83,38 @@ class Alcoholic_drinks extends Database implements Tbl {
         }
     }
     public function update(array $params) {
+        $id = $params['id'];
+        $brand = $params['brand'];
+        $date = $params['date'];
+        $price = $params['price'];
+        $manu = $params['manu'];
 
+        if (!isset($id)) {
+            return $stat = false;
+        }
+        elseif (!isset($model)) {
+            return $stat = false;
+        }
+        elseif (!isset($date)) {
+            return $stat = false;
+        }
+        elseif (!isset($price)) {
+            return $stat = false;
+        }
+        elseif (!isset($manu)) {
+            return $stat = false;
+        }
+
+        else {
+            $update = "UPDATE $this->tblName SET brand ='$brand', date='$date', price='$price', manufacturer='$manu' WHERE id = '$id'";
+            $update_stat = $this->conn->query($update);
+            if ($update_stat) {
+                return $update_stat;
+            }
+            else {
+                return $stat = false;
+            }
+        }
     }
 }
 
@@ -79,42 +125,35 @@ $request = $_SERVER['REQUEST_METHOD'];
 
 $status = new Status();
 
-// create
+// create and update
 if ($request == "POST") {
-    $brand = json_decode($_POST['brand']);
-    $price = json_decode($_POST['price']);
-    $date = json_decode($_POST['date']);
-    $manu = json_decode($_POST['manu']);
+    if (isset($_POST['id'])) {
+        $update = $_POST;
+        $update_stat = $data1->update($update);
 
-    $data = [
-        'brand' => $brand,
-        'date' => $date,
-        'price' => $price,
-        'manu' => $manu
-    ];
-
-// check if form is empty
-
-    if ($data['brand'] == null || $data['date'] == null || $data['price'] == null || $data['manu'] == null) {
-        $error = $status->error();
-        $error['error'] = "Please Insert All Information Needed";
-        
-        echo json_encode($data);
-        echo json_encode($error);
+        if ($update_stat) {
+            $up_stats = $status->successful();
+            echo json_encode($up_stats);
+        }
+        else {
+            $up_stats = $status->error();
+            echo json_encode($up_stats);
+        }
     }
+    else {
+        $inserted_data = $_POST;
+        $insert_stat = $data1->insert($inserted_data);
 
-// execute insertion if requirements are meet
-    elseif ($data['brand'] == !null && $data['date'] == !null && $data['price'] ==  !null && $data['manu'] == !null) {
-        $data1->insert($data);
-        $insert = $data1;
-        if ($insert) {
+        if ($insert_stat) {
             $insert_stat = $status->created();
             echo json_encode($insert_stat);
+            echo json_encode($inserted_data);
         }
         else {
             $insert_stat = $status->error();
             echo json_encode($insert_stat);
-        }
+            echo json_encode($inserted_data);
+        }   
     }
 }
 
@@ -149,13 +188,19 @@ elseif ($request == "GET") {
     }
     
 }
-// update
-elseif ($request == "PATCH") { 
-    echo $request;
-}
 // delete
 elseif ($request == "DELETE") {
-    echo $request;
+    $id = $_GET['id'];
+    $del = $data1->remove($id);
+
+    if ($del == true) {
+        $delete_stat = $status->successful();
+        echo json_encode($delete_stat);
+    }
+    elseif ($del == false) {
+        $delete_stat = $status->error();
+        echo json_encode($delete_stat);
+    }
 }
 
 // method not allowed
