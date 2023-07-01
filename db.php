@@ -22,5 +22,3 @@ class Database extends DBFrame {
 //     echo "connectidos successfulley";
 // }
 
-
-
