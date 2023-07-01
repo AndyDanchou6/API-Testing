@@ -62,11 +62,11 @@ class Gadgets extends Database implements Tables {
                 return $fetch_all;
             }
             else {
-                return $res = false;
+                return $res = null;
             } 
         }
         else {
-            return $res = false;
+            return $res = null;
         }
     }
     public function update(array $params) {
@@ -133,17 +133,19 @@ elseif ($request == "GET") {
             echo json_encode($get_stat);
         }
         else {
+            $get_stat = $status->found();
             echo json_encode($gadget_one);
             echo json_encode($get_stat);
         }
     }
     else {
         $all = $data1->showAll();
-        if ($all == false) {
+        if ($all == null) {
             $get_stat = $status->not_found();
             echo json_encode($get_stat);
         }
         else {
+            $get_stat = $status->found();
             echo json_encode($all);
             echo json_encode($get_stat);
         }
@@ -166,4 +168,3 @@ else {
     echo json_encode($req_stat);
 }
 
-// var_dump($status);
